@@ -4,13 +4,16 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 import com.svalero.astra.characters.Bullet;
 import com.svalero.astra.characters.EnemyBasic;
 import com.svalero.astra.characters.EnemyBoss;
 import com.svalero.astra.characters.EnemyZigzag;
 import com.svalero.astra.characters.Player;
+import com.svalero.astra.characters.PowerUp;
 import com.svalero.astra.managers.CameraManager;
 import com.svalero.astra.managers.ConfigManager;
 import com.svalero.astra.managers.LevelManager;
@@ -56,10 +59,27 @@ public class GameScreen implements Screen {
         // Texturas de balas
         Bullet.setDefaultTexture(atlas.findRegion("laserBlue01"));
 
-        // Texturas de enemigos — cada tipo tiene la suya
+        // Texturas de enemigos
         EnemyBasic.setDefaultTexture(atlas.findRegion("enemyRed1"));
         EnemyZigzag.setDefaultTexture(atlas.findRegion("enemyBlue2"));
         EnemyBoss.setDefaultTexture(atlas.findRegion("ufoRed"));
+
+        // Texturas de powerups
+        PowerUp.setTexture(PowerUp.Type.SHIELD,      atlas.findRegion("powerupBlue_shield"));
+        PowerUp.setTexture(PowerUp.Type.SPEED,       atlas.findRegion("powerupBlue_bolt"));
+        PowerUp.setTexture(PowerUp.Type.DOUBLE_SHOT, atlas.findRegion("powerupBlue_star"));
+
+        // Animación de explosión con frames fire00-fire19
+        Array<TextureRegion> explosionFrames = new Array<>();
+        for (int i = 0; i <= 19; i++) {
+            String name = "fire" + (i < 10 ? "0" + i : "" + i);
+            TextureRegion frame = atlas.findRegion(name);
+            if (frame != null) explosionFrames.add(frame);
+        }
+        if (explosionFrames.size > 0) {
+            Animation<TextureRegion> explosionAnim = new Animation<>(0.05f, explosionFrames);
+            spriteManager.setExplosionAnimation(explosionAnim);
+        }
 
         // Inicializar managers
         spriteManager.init(player);
@@ -136,6 +156,5 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         stopMusic();
-        //renderManager.dispose();
     }
 }

@@ -22,6 +22,12 @@ public class Player extends Character {
     public float doubleShotTimer;
     private Sound shootSound;
 
+    // --- Parpadeo ---
+    public boolean blinking;
+    private float blinkTimer;
+    private static final float BLINK_DURATION = 2f;
+    private static final float BLINK_SPEED    = 0.1f;
+
     public Player(float x, float y) {
         super(x, y, Constants.PLAYER_LIVES, 99, 75);
         this.score        = 0;
@@ -30,6 +36,8 @@ public class Player extends Character {
         this.shieldActive = false;
         this.speedActive  = false;
         this.doubleShot   = false;
+        this.blinking     = false;
+        this.blinkTimer   = 0f;
     }
 
     public void setShootSound(Sound sound) {
@@ -38,6 +46,11 @@ public class Player extends Character {
 
     public void setTexture(TextureRegion texture) {
         this.currentFrame = texture;
+    }
+
+    public void startBlink() {
+        blinking    = true;
+        blinkTimer  = BLINK_DURATION;
     }
 
     @Override
@@ -86,6 +99,14 @@ public class Player extends Character {
             if (doubleShotTimer <= 0) doubleShot = false;
         }
 
+        // Parpadeo
+        if (blinking) {
+            blinkTimer -= dt;
+            if (blinkTimer <= 0) {
+                blinking = false;
+            }
+        }
+
         if (currentAnimation != null) {
             currentFrame = currentAnimation.getKeyFrame(stateTime, true);
         }
@@ -119,7 +140,8 @@ public class Player extends Character {
 
     @Override
     public void render(Batch batch) {
-        if (currentFrame != null) {
+        boolean visible = !blinking || (int)(blinkTimer / BLINK_SPEED) % 2 == 0;
+        if (currentFrame != null && visible) {
             batch.draw(currentFrame,
                 position.x, position.y,
                 width / 2f, height / 2f,

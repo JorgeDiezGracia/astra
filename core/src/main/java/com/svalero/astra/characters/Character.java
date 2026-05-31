@@ -12,7 +12,7 @@ public abstract class Character {
     public Vector2 velocity;
     public Rectangle rect;
     public int lives;
-    protected boolean dead;
+    public boolean dead;
     public float stateTime;
     protected Animation<TextureRegion> currentAnimation;
     protected TextureRegion currentFrame;
