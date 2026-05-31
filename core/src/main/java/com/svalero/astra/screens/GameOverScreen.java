@@ -16,7 +16,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.svalero.astra.managers.ResourceManager;
+import com.svalero.astra.managers.ScoreManager;
 import com.svalero.astra.util.Constants;
+
+import java.util.List;
 
 public class GameOverScreen implements Screen {
 
@@ -24,6 +27,7 @@ public class GameOverScreen implements Screen {
     private Stage stage;
     private Skin skin;
     private ResourceManager resourceManager;
+    private ScoreManager scoreManager;
     private int finalScore;
     private boolean victory;
     private TextField tfName;
@@ -33,6 +37,7 @@ public class GameOverScreen implements Screen {
         this.finalScore      = finalScore;
         this.victory         = victory;
         this.resourceManager = ResourceManager.getInstance();
+        this.scoreManager    = ScoreManager.getInstance();
     }
 
     @Override
@@ -41,10 +46,15 @@ public class GameOverScreen implements Screen {
         skin  = new Skin(Gdx.files.internal("uiskin.json"));
         Gdx.input.setInputProcessor(stage);
 
-        Table table = new Table();
-        table.setFillParent(true);
-        table.center();
-        stage.addActor(table);
+        // Tabla principal dividida en dos columnas
+        Table root = new Table();
+        root.setFillParent(true);
+        root.center();
+        stage.addActor(root);
+
+        // --- Columna izquierda: resultado ---
+        Table leftTable = new Table();
+        leftTable.center();
 
         // Título
         Label.LabelStyle titleStyle = new Label.LabelStyle();
@@ -53,34 +63,58 @@ public class GameOverScreen implements Screen {
         titleStyle.font      = font;
         titleStyle.fontColor = victory ? Color.YELLOW : Color.RED;
         Label title = new Label(victory ? "YOU WIN!" : "GAME OVER", titleStyle);
-        table.add(title).padBottom(30).row();
+        leftTable.add(title).padBottom(20).row();
 
-        // Puntuación final
-        Label.LabelStyle scoreStyle = new Label.LabelStyle();
+        // Puntuación
+        Label.LabelStyle textStyle = new Label.LabelStyle();
         BitmapFont fontMedium = resourceManager.fontMedium;
         if (fontMedium == null) fontMedium = skin.getFont("default-font");
-        scoreStyle.font      = fontMedium;
-        scoreStyle.fontColor = Color.WHITE;
-        Label lblScore = new Label("SCORE: " + finalScore, scoreStyle);
-        table.add(lblScore).padBottom(30).row();
+        textStyle.font      = fontMedium;
+        textStyle.fontColor = Color.WHITE;
+        Label lblScore = new Label("SCORE: " + finalScore, textStyle);
+        leftTable.add(lblScore).padBottom(20).row();
 
-        // Campo nombre para el ranking
-        Label lblName = new Label("Enter your name:", scoreStyle);
-        table.add(lblName).padBottom(10).row();
+        // Campo nombre
+        Label lblName = new Label("Enter your name:", textStyle);
+        leftTable.add(lblName).padBottom(8).row();
 
         tfName = new TextField("", skin);
         tfName.setMaxLength(15);
         tfName.setMessageText("Your name...");
-        table.add(tfName).width(300).height(50).padBottom(30).row();
+        leftTable.add(tfName).width(250).height(45).padBottom(20).row();
 
         // Botones
         TextButton btnSave      = new TextButton("SAVE SCORE", skin);
         TextButton btnPlayAgain = new TextButton("PLAY AGAIN", skin);
         TextButton btnMainMenu  = new TextButton("MAIN MENU", skin);
 
-        table.add(btnSave).width(250).height(55).padBottom(15).row();
-        table.add(btnPlayAgain).width(250).height(55).padBottom(15).row();
-        table.add(btnMainMenu).width(250).height(55).row();
+        leftTable.add(btnSave).width(220).height(50).padBottom(10).row();
+        leftTable.add(btnPlayAgain).width(220).height(50).padBottom(10).row();
+        leftTable.add(btnMainMenu).width(220).height(50).row();
+
+        // --- Columna derecha: ranking ---
+        Table rightTable = new Table();
+        rightTable.center();
+
+        Label rankTitle = new Label("TOP 10", titleStyle);
+        rightTable.add(rankTitle).padBottom(15).row();
+
+        List<ScoreManager.ScoreEntry> topScores = scoreManager.getTopScores(10);
+        if (topScores.isEmpty()) {
+            Label noScores = new Label("No scores yet!", textStyle);
+            rightTable.add(noScores).row();
+        } else {
+            for (int i = 0; i < topScores.size(); i++) {
+                ScoreManager.ScoreEntry entry = topScores.get(i);
+                String line = (i + 1) + ".  " + entry.name + "  -  " + entry.score;
+                Label lbl = new Label(line, textStyle);
+                rightTable.add(lbl).left().padBottom(5).row();
+            }
+        }
+
+        // Añadir columnas al root
+        root.add(leftTable).padRight(80).top();
+        root.add(rightTable).top();
 
         // Listeners
         btnSave.addListener(new ChangeListener() {
@@ -88,8 +122,10 @@ public class GameOverScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 String name = tfName.getText().trim();
                 if (!name.isEmpty()) {
-                    // TODO: guardar en SQLite cuando implementemos ScoreManager
-                    System.out.println("Saving score: " + name + " - " + finalScore);
+                    scoreManager.saveScore(name, finalScore);
+                    // Refrescar ranking
+                    stage.clear();
+                    show();
                 }
             }
         });
