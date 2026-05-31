@@ -34,9 +34,8 @@ public class SplashScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Avanzar carga
-        progress = resourceManager.getProgress();
         boolean done = resourceManager.update();
+        progress = resourceManager.getProgress();
 
         // Dibujar barra de progreso
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);

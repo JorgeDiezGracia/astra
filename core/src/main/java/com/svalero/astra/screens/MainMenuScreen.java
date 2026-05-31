@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.svalero.astra.managers.ResourceManager;
 import com.svalero.astra.util.Constants;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public class MainMenuScreen implements Screen {
 
@@ -45,10 +46,11 @@ public class MainMenuScreen implements Screen {
 
         // Título
         Label.LabelStyle titleStyle = new Label.LabelStyle();
-        titleStyle.font = resourceManager.fontLarge;
+        BitmapFont font = resourceManager.fontLarge;
+        if (font == null) font = skin.getFont("default-font");
+        titleStyle.font = font;
         titleStyle.fontColor = Color.CYAN;
         Label title = new Label("ASTRA", titleStyle);
-        table.add(title).padBottom(60).row();
 
         // Botones
         TextButton btnPlay = new TextButton("PLAY", skin);

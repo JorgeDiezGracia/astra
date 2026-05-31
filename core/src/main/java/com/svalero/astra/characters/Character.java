@@ -8,23 +8,14 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class Character {
 
-    // --- Posición y movimiento ---
     public Vector2 position;
     public Vector2 velocity;
-
-    // --- Colisión ---
     public Rectangle rect;
-
-    // --- Estado ---
     public int lives;
     protected boolean dead;
     public float stateTime;
-
-    // --- Gráficos ---
     protected Animation<TextureRegion> currentAnimation;
     protected TextureRegion currentFrame;
-
-    // --- Tamaño ---
     protected float width;
     protected float height;
 
@@ -38,8 +29,6 @@ public abstract class Character {
         this.height    = height;
         this.rect      = new Rectangle(x, y, width, height);
     }
-
-    // --- Métodos comunes ---
 
     public void render(Batch batch) {
         if (currentFrame != null) {
@@ -62,8 +51,6 @@ public abstract class Character {
             die();
         }
     }
-
-    // --- Métodos abstractos ---
 
     public abstract void update(float dt);
     public abstract void shoot();

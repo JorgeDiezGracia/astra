@@ -1,17 +1,24 @@
 package com.svalero.astra.characters;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.svalero.astra.util.Constants;
 
 public class EnemyBasic extends Enemy {
 
+    private static TextureRegion ownTexture;
+
+    public static void setDefaultTexture(TextureRegion texture) {
+        ownTexture = texture;
+    }
+
     public EnemyBasic(float x, float y) {
         super(x, y, 1, 93, 84, Constants.POINTS_BASIC);
         this.velocity.x = -Constants.ENEMY_SPEED_BASIC;
+        if (ownTexture != null) this.currentFrame = ownTexture;
     }
 
     @Override
     protected void updateMovement(float dt) {
-        // Movimiento recto hacia la izquierda
         position.x += velocity.x * dt;
     }
 
@@ -19,7 +26,6 @@ public class EnemyBasic extends Enemy {
     public void shoot() {
         if (shootSound != null) shootSound.play(0.3f);
 
-        // Dispara una bala hacia la izquierda
         bullets.add(new Bullet(
             position.x,
             position.y + height / 2f - 5f,

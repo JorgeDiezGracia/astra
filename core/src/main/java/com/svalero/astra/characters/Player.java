@@ -3,7 +3,6 @@ package com.svalero.astra.characters;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
@@ -12,33 +11,22 @@ import com.svalero.astra.util.Util;
 
 public class Player extends Character {
 
-    // --- Puntuación ---
     public int score;
-
-    // --- Disparo ---
     private float shootTimer;
     public Array<Bullet> bullets;
-
-    // --- Escudo (powerup) ---
     public boolean shieldActive;
     public float shieldTimer;
-
-    // --- Velocidad extra (powerup) ---
     public boolean speedActive;
     public float speedTimer;
-
-    // --- Doble disparo (powerup) ---
     public boolean doubleShot;
     public float doubleShotTimer;
-
-    // --- Sonido ---
     private Sound shootSound;
 
     public Player(float x, float y) {
         super(x, y, Constants.PLAYER_LIVES, 99, 75);
-        this.score       = 0;
-        this.shootTimer  = 0f;
-        this.bullets     = new Array<>();
+        this.score        = 0;
+        this.shootTimer   = 0f;
+        this.bullets      = new Array<>();
         this.shieldActive = false;
         this.speedActive  = false;
         this.doubleShot   = false;
@@ -48,12 +36,15 @@ public class Player extends Character {
         this.shootSound = sound;
     }
 
+    public void setTexture(TextureRegion texture) {
+        this.currentFrame = texture;
+    }
+
     @Override
     public void update(float dt) {
-        stateTime += dt;
+        stateTime  += dt;
         shootTimer += dt;
 
-        // --- Movimiento con teclado ---
         float speed = speedActive ? Constants.PLAYER_SPEED * 1.6f : Constants.PLAYER_SPEED;
         velocity.set(0, 0);
 
@@ -66,19 +57,14 @@ public class Player extends Character {
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S))
             velocity.y = -speed;
 
-        // Aplicar movimiento con delta time
         position.x += velocity.x * dt;
         position.y += velocity.y * dt;
-
-        // Mantener dentro de la pantalla
         Util.clampToScreen(position, width, height);
 
-        // --- Disparo automático con SPACE ---
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             shoot();
         }
 
-        // --- Actualizar balas ---
         for (int i = bullets.size - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
             bullet.update(dt);
@@ -87,7 +73,6 @@ public class Player extends Character {
             }
         }
 
-        // --- Timers de powerups ---
         if (shieldActive) {
             shieldTimer -= dt;
             if (shieldTimer <= 0) shieldActive = false;
@@ -101,7 +86,6 @@ public class Player extends Character {
             if (doubleShotTimer <= 0) doubleShot = false;
         }
 
-        // --- Actualizar frame de animación ---
         if (currentAnimation != null) {
             currentFrame = currentAnimation.getKeyFrame(stateTime, true);
         }
@@ -116,7 +100,6 @@ public class Player extends Character {
 
         if (shootSound != null) shootSound.play(0.5f);
 
-        // Bala central
         bullets.add(new Bullet(
             position.x + width,
             position.y + height / 2f - 5f,
@@ -124,7 +107,6 @@ public class Player extends Character {
             true
         ));
 
-        // Segunda bala si tiene doble disparo
         if (doubleShot) {
             bullets.add(new Bullet(
                 position.x + width,
@@ -137,19 +119,21 @@ public class Player extends Character {
 
     @Override
     public void render(Batch batch) {
-        super.render(batch);
-        // Pintar balas
+        if (currentFrame != null) {
+            batch.draw(currentFrame,
+                position.x, position.y,
+                width / 2f, height / 2f,
+                width, height,
+                1f, 1f,
+                -90f);
+        }
         for (Bullet bullet : bullets) {
             bullet.render(batch);
         }
     }
 
     @Override
-    public void die() {
-        // Animación de muerte — se implementa cuando tengamos los assets
-    }
-
-    // --- Powerups ---
+    public void die() {}
 
     public void activateShield(float duration) {
         shieldActive = true;

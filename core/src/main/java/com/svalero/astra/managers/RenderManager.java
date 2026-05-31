@@ -109,6 +109,6 @@ public class RenderManager {
     }
 
     public void dispose() {
-        batch.dispose();
+       // batch.dispose();
     }
 }

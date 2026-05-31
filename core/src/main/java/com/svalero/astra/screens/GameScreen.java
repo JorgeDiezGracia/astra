@@ -4,6 +4,12 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.svalero.astra.characters.Bullet;
+import com.svalero.astra.characters.EnemyBasic;
+import com.svalero.astra.characters.EnemyBoss;
+import com.svalero.astra.characters.EnemyZigzag;
 import com.svalero.astra.characters.Player;
 import com.svalero.astra.managers.CameraManager;
 import com.svalero.astra.managers.ConfigManager;
@@ -18,16 +24,14 @@ public class GameScreen implements Screen {
     private Game game;
     private Player player;
 
-    // Managers
     private ResourceManager resourceManager;
-    private SpriteManager spriteManager;
-    private RenderManager renderManager;
-    private LevelManager levelManager;
-    private CameraManager cameraManager;
-    private ScrollManager scrollManager;
-    private ConfigManager configManager;
+    private SpriteManager   spriteManager;
+    private RenderManager   renderManager;
+    private LevelManager    levelManager;
+    private CameraManager   cameraManager;
+    private ScrollManager   scrollManager;
+    private ConfigManager   configManager;
 
-    // Música
     private com.badlogic.gdx.audio.Music music;
 
     public GameScreen(Game game) {
@@ -43,20 +47,30 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        // Crear jugador
+        TextureAtlas atlas = resourceManager.getAtlas();
+
+        // Jugador
         player = new Player(100, 300);
+        player.setTexture(atlas.findRegion("playerShip1_blue"));
 
-        // Inicializar SpriteManager con el jugador
+        // Texturas de balas
+        Bullet.setDefaultTexture(atlas.findRegion("laserBlue01"));
+
+        // Texturas de enemigos — cada tipo tiene la suya
+        EnemyBasic.setDefaultTexture(atlas.findRegion("enemyRed1"));
+        EnemyZigzag.setDefaultTexture(atlas.findRegion("enemyBlue2"));
+        EnemyBoss.setDefaultTexture(atlas.findRegion("ufoRed"));
+
+        // Inicializar managers
         spriteManager.init(player);
+        levelManager.gameComplete  = false;
+        levelManager.levelComplete = false;
+        levelManager.loadLevel(levelManager.currentLevel == 0 ? 1 : levelManager.currentLevel);
 
-        // Cargar nivel
-        levelManager.loadLevel(levelManager.currentLevel);
-
-        // Inicializar scroll con fondos del atlas
-        // TODO: sustituir null por las TextureRegions reales cuando tengamos el atlas
-        com.badlogic.gdx.graphics.g2d.TextureRegion[] layers = new
-            com.badlogic.gdx.graphics.g2d.TextureRegion[2];
-        float[] speeds = { 30f, 80f };
+        // Fondo parallax
+        TextureRegion[] layers = new TextureRegion[1];
+        layers[0] = atlas.findRegion("blue");
+        float[] speeds = { 60f };
         scrollManager.init(layers, speeds);
 
         // Música
@@ -71,24 +85,17 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float dt) {
-        // Pausa con Escape
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             if (music != null) music.pause();
             game.setScreen(new PauseScreen(game, this));
             return;
         }
 
-        // Actualizar cámara y scroll
         cameraManager.update();
         scrollManager.update(dt);
-
-        // Actualizar lógica
         spriteManager.update(dt);
-
-        // Pintar
         renderManager.render(player);
 
-        // Comprobar game over
         if (player.isDead()) {
             stopMusic();
             game.setScreen(new GameOverScreen(game, player.score));
@@ -96,16 +103,13 @@ public class GameScreen implements Screen {
             return;
         }
 
-        // Comprobar nivel completo
         if (levelManager.levelComplete) {
             stopMusic();
-            game.setScreen(new LevelCompleteScreen(game, player.score,
-                levelManager.currentLevel));
+            game.setScreen(new LevelCompleteScreen(game, player.score, levelManager.currentLevel));
             dispose();
             return;
         }
 
-        // Comprobar juego completo
         if (levelManager.gameComplete) {
             stopMusic();
             game.setScreen(new GameOverScreen(game, player.score));
@@ -132,6 +136,6 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         stopMusic();
-        renderManager.dispose();
+        //renderManager.dispose();
     }
 }

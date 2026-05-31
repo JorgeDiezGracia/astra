@@ -15,8 +15,14 @@ public class Bullet {
     private boolean fromPlayer;
     private TextureRegion texture;
 
-    private static final float WIDTH  = 36f;
-    private static final float HEIGHT = 9f;
+    private static TextureRegion defaultTexture;
+
+    public static final float WIDTH  = 36f;
+    public static final float HEIGHT = 9f;
+
+    public static void setDefaultTexture(TextureRegion texture) {
+        defaultTexture = texture;
+    }
 
     public Bullet(float x, float y, float velocityX, float velocityY, boolean fromPlayer) {
         this.position    = new Vector2(x, y);
@@ -24,6 +30,7 @@ public class Bullet {
         this.velocityY   = velocityY;
         this.fromPlayer  = fromPlayer;
         this.rect        = new Rectangle(x, y, WIDTH, HEIGHT);
+        this.texture     = defaultTexture;
     }
 
     public void update(float dt) {
