@@ -1,6 +1,6 @@
 # Astra
 
-Juego de naves 2D desarrollado con libGDX para la asignatura de Desarrollo de Videojuegos 2D/3D.
+Juego de naves 2D desarrollado con libGDX para la AA2 de la asignatura Programación Multimedia y Dispositivos Móviles.  
 
 ## Cómo jugar
 
