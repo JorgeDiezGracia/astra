@@ -1,33 +1,28 @@
-# astra
+# Astra
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+Juego de naves 2D desarrollado con libGDX para la asignatura de Desarrollo de Videojuegos 2D/3D.
 
-This project was generated with a template including simple application launchers and an empty `ApplicationAdapter` extension.
+## Cómo jugar
 
-## Platforms
+- **Mover:** W A S D o flechas
+- **Disparar:** Espacio
+- **Pausa:** Escape
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
+## Niveles
 
-## Gradle
+El juego tiene 2 niveles. En cada uno hay oleadas de enemigos y un jefe final al que derrotar para pasar al siguiente nivel.
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
+## Enemigos
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
+- Nave roja: vuela en línea recta
+- Nave azul: se mueve en zigzag
+- Ovni: jefe final con 3 fases
 
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
+## Powerups
+
+Cuando matas enemigos pueden soltar powerups:
+- Escudo: te protege del daño durante 8 segundos
+- Rayo: aumenta tu velocidad durante 8 segundos
+- Estrella: doble disparo durante 8 segundos
+
+
