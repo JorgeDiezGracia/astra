@@ -37,6 +37,12 @@ public class ResourceManager {
         // Atlas de texturas
         assetManager.load(Constants.TEXTURE_ATLAS, TextureAtlas.class);
 
+        // Fondos
+        assetManager.load("black.png", com.badlogic.gdx.graphics.Texture.class);
+        assetManager.load("blue.png", com.badlogic.gdx.graphics.Texture.class);
+        assetManager.load("darkPurple.png", com.badlogic.gdx.graphics.Texture.class);
+        assetManager.load("purple.png", com.badlogic.gdx.graphics.Texture.class);
+
         // Sonidos
         assetManager.load(Constants.SOUNDS_PATH + "laser1.ogg", Sound.class);
         assetManager.load(Constants.SOUNDS_PATH + "laser2.ogg", Sound.class);
@@ -109,4 +115,8 @@ public class ResourceManager {
         if (fontMedium != null) fontMedium.dispose();
         if (fontLarge  != null) fontLarge.dispose();
     }
+    public com.badlogic.gdx.graphics.Texture getBackground(String filename) {
+        return assetManager.get(filename, com.badlogic.gdx.graphics.Texture.class);
+    }
 }
+

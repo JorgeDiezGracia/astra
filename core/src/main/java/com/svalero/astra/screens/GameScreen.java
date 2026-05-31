@@ -87,20 +87,18 @@ public class GameScreen implements Screen {
         levelManager.levelComplete = false;
         levelManager.loadLevel(levelManager.currentLevel == 0 ? 1 : levelManager.currentLevel);
 
-        // Fondo parallax
+        // Fondo parallax — 2 capas con velocidades distintas
+        com.badlogic.gdx.graphics.Texture bgTexture = resourceManager.getBackground(
+            levelManager.currentLevel == 1 ? "blue.png" : "darkPurple.png"
+        );
+        bgTexture.setWrap(
+            com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat,
+            com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat
+        );
         TextureRegion[] layers = new TextureRegion[1];
-        layers[0] = atlas.findRegion("blue");
+        layers[0] = new TextureRegion(bgTexture);
         float[] speeds = { 60f };
         scrollManager.init(layers, speeds);
-
-        // Música
-        String musicFile = levelManager.currentLevel == 1 ? "level1.ogg" : "level2.ogg";
-        music = resourceManager.getMusic(musicFile);
-        if (music != null && configManager.isSoundEnabled()) {
-            music.setLooping(true);
-            music.setVolume(configManager.getMusicVolume());
-            music.play();
-        }
     }
 
     @Override
