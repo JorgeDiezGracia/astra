@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -24,11 +25,13 @@ public class GameOverScreen implements Screen {
     private Skin skin;
     private ResourceManager resourceManager;
     private int finalScore;
+    private boolean victory;
     private TextField tfName;
 
-    public GameOverScreen(Game game, int finalScore) {
+    public GameOverScreen(Game game, int finalScore, boolean victory) {
         this.game            = game;
         this.finalScore      = finalScore;
+        this.victory         = victory;
         this.resourceManager = ResourceManager.getInstance();
     }
 
@@ -45,14 +48,18 @@ public class GameOverScreen implements Screen {
 
         // Título
         Label.LabelStyle titleStyle = new Label.LabelStyle();
-        titleStyle.font      = resourceManager.fontLarge;
-        titleStyle.fontColor = Color.RED;
-        Label title = new Label("GAME OVER", titleStyle);
+        BitmapFont font = resourceManager.fontLarge;
+        if (font == null) font = skin.getFont("default-font");
+        titleStyle.font      = font;
+        titleStyle.fontColor = victory ? Color.YELLOW : Color.RED;
+        Label title = new Label(victory ? "YOU WIN!" : "GAME OVER", titleStyle);
         table.add(title).padBottom(30).row();
 
         // Puntuación final
         Label.LabelStyle scoreStyle = new Label.LabelStyle();
-        scoreStyle.font      = resourceManager.fontMedium;
+        BitmapFont fontMedium = resourceManager.fontMedium;
+        if (fontMedium == null) fontMedium = skin.getFont("default-font");
+        scoreStyle.font      = fontMedium;
         scoreStyle.fontColor = Color.WHITE;
         Label lblScore = new Label("SCORE: " + finalScore, scoreStyle);
         table.add(lblScore).padBottom(30).row();

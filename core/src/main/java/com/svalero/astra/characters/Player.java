@@ -21,6 +21,7 @@ public class Player extends Character {
     public boolean doubleShot;
     public float doubleShotTimer;
     private Sound shootSound;
+    private Sound powerUpSound;
 
     // --- Parpadeo ---
     public boolean blinking;
@@ -44,13 +45,21 @@ public class Player extends Character {
         this.shootSound = sound;
     }
 
+    public void setPowerUpSound(Sound sound) {
+        this.powerUpSound = sound;
+    }
+
+    public Sound getPowerUpSound() {
+        return powerUpSound;
+    }
+
     public void setTexture(TextureRegion texture) {
         this.currentFrame = texture;
     }
 
     public void startBlink() {
-        blinking    = true;
-        blinkTimer  = BLINK_DURATION;
+        blinking   = true;
+        blinkTimer = BLINK_DURATION;
     }
 
     @Override
@@ -102,9 +111,7 @@ public class Player extends Character {
         // Parpadeo
         if (blinking) {
             blinkTimer -= dt;
-            if (blinkTimer <= 0) {
-                blinking = false;
-            }
+            if (blinkTimer <= 0) blinking = false;
         }
 
         if (currentAnimation != null) {

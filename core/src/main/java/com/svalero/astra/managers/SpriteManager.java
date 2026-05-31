@@ -1,5 +1,6 @@
 package com.svalero.astra.managers;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
@@ -18,6 +19,7 @@ public class SpriteManager {
     public Array<Explosion> explosions;
     private LevelManager levelManager;
     private Animation<TextureRegion> explosionAnimation;
+    private Sound powerUpSound;
 
     private SpriteManager() {
         levelManager = LevelManager.getInstance();
@@ -35,8 +37,12 @@ public class SpriteManager {
         this.explosionAnimation = animation;
     }
 
+    public void setPowerUpSound(Sound sound) {
+        this.powerUpSound = sound;
+    }
+
     public void init(Player player) {
-        this.player = player;
+        this.player         = player;
         this.explosions.clear();
         player.lives        = Constants.PLAYER_LIVES;
         player.score        = 0;
@@ -45,6 +51,7 @@ public class SpriteManager {
         player.shieldActive = false;
         player.speedActive  = false;
         player.doubleShot   = false;
+        player.blinking     = false;
     }
 
     public void update(float dt) {
@@ -71,7 +78,7 @@ public class SpriteManager {
     }
 
     private void checkCollisions() {
-        Array<Enemy> enemies    = levelManager.enemies;
+        Array<Enemy>   enemies  = levelManager.enemies;
         Array<PowerUp> powerUps = levelManager.powerUps;
 
         // Balas del jugador vs enemigos
@@ -99,7 +106,7 @@ public class SpriteManager {
             for (int i = enemy.bullets.size - 1; i >= 0; i--) {
                 Bullet bullet = enemy.bullets.get(i);
                 if (bullet.rect.overlaps(player.rect)) {
-                    if (!player.shieldActive) {
+                    if (!player.shieldActive && !player.blinking) {
                         player.takeDamage();
                         player.startBlink();
                     }
@@ -108,10 +115,10 @@ public class SpriteManager {
             }
         }
 
-        // Enemigos vs jugador
+        // Enemigos vs jugador colisión directa
         for (Enemy enemy : enemies) {
             if (enemy.rect.overlaps(player.rect)) {
-                if (!player.shieldActive) {
+                if (!player.shieldActive && !player.blinking) {
                     player.takeDamage();
                     player.startBlink();
                 }
@@ -130,6 +137,7 @@ public class SpriteManager {
             if (!powerUp.isCollected() && powerUp.rect.overlaps(player.rect)) {
                 powerUp.applyTo(player);
                 powerUp.collect();
+                if (powerUpSound != null) powerUpSound.play(0.7f);
             }
         }
     }
@@ -141,6 +149,7 @@ public class SpriteManager {
         player.shieldActive = false;
         player.speedActive  = false;
         player.doubleShot   = false;
+        player.blinking     = false;
         explosions.clear();
     }
 }

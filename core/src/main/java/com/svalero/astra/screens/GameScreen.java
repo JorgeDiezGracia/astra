@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -69,7 +70,24 @@ public class GameScreen implements Screen {
         PowerUp.setTexture(PowerUp.Type.SPEED,       atlas.findRegion("powerupBlue_bolt"));
         PowerUp.setTexture(PowerUp.Type.DOUBLE_SHOT, atlas.findRegion("powerupBlue_star"));
 
-        // Animación de explosión con frames fire00-fire19
+        // Sonidos
+        Sound laserSound     = resourceManager.getSound("laser1.ogg");
+        Sound enemySound     = resourceManager.getSound("laser2.ogg");
+        Sound explosionSound = resourceManager.getSound("explosion.ogg");
+        Sound shieldSound    = resourceManager.getSound("shieldUp.ogg");
+
+        player.setShootSound(laserSound);
+
+        EnemyBasic.setDefaultShootSound(enemySound);
+        EnemyBasic.setDefaultExplosionSound(explosionSound);
+        EnemyZigzag.setDefaultShootSound(enemySound);
+        EnemyZigzag.setDefaultExplosionSound(explosionSound);
+        EnemyBoss.setDefaultShootSound(enemySound);
+        EnemyBoss.setDefaultExplosionSound(explosionSound);
+
+        spriteManager.setPowerUpSound(shieldSound);
+
+        // Animación de explosión
         Array<TextureRegion> explosionFrames = new Array<>();
         for (int i = 0; i <= 19; i++) {
             String name = "fire" + (i < 10 ? "0" + i : "" + i);
@@ -87,7 +105,7 @@ public class GameScreen implements Screen {
         levelManager.levelComplete = false;
         levelManager.loadLevel(levelManager.currentLevel == 0 ? 1 : levelManager.currentLevel);
 
-        // Fondo parallax — 2 capas con velocidades distintas
+        // Fondo parallax
         com.badlogic.gdx.graphics.Texture bgTexture = resourceManager.getBackground(
             levelManager.currentLevel == 1 ? "blue.png" : "darkPurple.png"
         );
@@ -99,6 +117,15 @@ public class GameScreen implements Screen {
         layers[0] = new TextureRegion(bgTexture);
         float[] speeds = { 60f };
         scrollManager.init(layers, speeds);
+
+        // Música
+        String musicFile = levelManager.currentLevel == 1 ? "level1.ogg" : "level2.ogg";
+        music = resourceManager.getMusic(musicFile);
+        if (music != null && configManager.isSoundEnabled()) {
+            music.setLooping(true);
+            music.setVolume(configManager.getMusicVolume());
+            music.play();
+        }
     }
 
     @Override
@@ -116,7 +143,7 @@ public class GameScreen implements Screen {
 
         if (player.isDead()) {
             stopMusic();
-            game.setScreen(new GameOverScreen(game, player.score));
+            game.setScreen(new GameOverScreen(game, player.score, false));
             dispose();
             return;
         }
@@ -130,7 +157,7 @@ public class GameScreen implements Screen {
 
         if (levelManager.gameComplete) {
             stopMusic();
-            game.setScreen(new GameOverScreen(game, player.score));
+            game.setScreen(new GameOverScreen(game, player.score, true));
             dispose();
         }
     }

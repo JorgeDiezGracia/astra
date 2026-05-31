@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -48,21 +49,23 @@ public class LevelCompleteScreen implements Screen {
 
         // Título
         Label.LabelStyle titleStyle = new Label.LabelStyle();
-        titleStyle.font      = resourceManager.fontLarge;
+        BitmapFont font = resourceManager.fontLarge;
+        if (font == null) font = skin.getFont("default-font");
+        titleStyle.font      = font;
         titleStyle.fontColor = Color.YELLOW;
         Label title = new Label("LEVEL " + level + " COMPLETE!", titleStyle);
         table.add(title).padBottom(30).row();
 
         // Puntuación
         Label.LabelStyle textStyle = new Label.LabelStyle();
-        textStyle.font      = resourceManager.fontMedium;
+        BitmapFont fontMedium = resourceManager.fontMedium;
+        if (fontMedium == null) fontMedium = skin.getFont("default-font");
+        textStyle.font      = fontMedium;
         textStyle.fontColor = Color.WHITE;
         Label lblScore = new Label("SCORE: " + score, textStyle);
         table.add(lblScore).padBottom(50).row();
 
-        // Botón siguiente nivel o fin del juego
-        TextButton btnNext = new TextButton(
-            levelManager.gameComplete ? "FINISH" : "NEXT LEVEL", skin);
+        TextButton btnNext     = new TextButton("NEXT LEVEL", skin);
         TextButton btnMainMenu = new TextButton("MAIN MENU", skin);
 
         table.add(btnNext).width(250).height(55).padBottom(15).row();
@@ -71,12 +74,8 @@ public class LevelCompleteScreen implements Screen {
         btnNext.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (levelManager.gameComplete) {
-                    game.setScreen(new GameOverScreen(game, score));
-                } else {
-                    levelManager.nextLevel();
-                    game.setScreen(new GameScreen(game));
-                }
+                levelManager.nextLevel();
+                game.setScreen(new GameScreen(game));
                 dispose();
             }
         });

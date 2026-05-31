@@ -16,14 +16,29 @@ public abstract class Enemy extends Character {
     protected Sound explosionSound;
     protected static TextureRegion defaultTexture;
 
+    protected static Sound defaultShootSound;
+    protected static Sound defaultExplosionSound;
+
+
+
     public Enemy(float x, float y, int lives, float width, float height, int points) {
         super(x, y, lives, width, height);
         this.points     = points;
         this.shootTimer = 0f;
         this.bullets    = new Array<>();
+        this.shootSound     = defaultShootSound;
+        this.explosionSound = defaultExplosionSound;
         if (defaultTexture != null) {
             this.currentFrame = defaultTexture;
         }
+    }
+
+    public static void setDefaultShootSound(Sound sound) {
+        defaultShootSound = sound;
+    }
+
+    public static void setDefaultExplosionSound(Sound sound) {
+        defaultExplosionSound = sound;
     }
 
     public static void setDefaultTexture(TextureRegion texture) {
